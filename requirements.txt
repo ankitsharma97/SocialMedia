@@ -3,3 +3,4 @@ Django
 pillow
 sqlparse
 typing_extensions
+gunicorn
