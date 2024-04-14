@@ -1,0 +1,47 @@
+<!DOCTYPE html> {% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SocialMedia</title>
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {%block head%}{%endblock head%}
+   
+</head>
+
+<body style="zoom: 130%;">
+    <div class="container-fluid bg-dark">
+        {% include 'navbar.html' %}
+
+    </div>
+   <div class="container wrapper">
+    <div class="row justify-content-center">
+        {% if messages %}
+            <div class="col-6"> 
+                {% for message in messages %}
+                    <div class="alert alert-danger text-center" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+        <div class="row">
+            {% block content %} {% endblock content %}
+        </div>
+    </div>
+    <footer class="bg-dark text-center my-1 footer">
+        <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05);">
+            © 2024 Copyright:
+            <a class="text-white" href="https://www.linkedin.com/in/ankit-sharma-op/">Ankit Sharma</a>
+        </div>
+    </footer>
+    <script src="{% static 'js/jquery.js' %}"></script>
+    <script src="{% static 'js/popper.js' %}"></script>
+    <script src="{% static 'js/bootstrap.js' %}"></script>
+</body>
+
+</html>

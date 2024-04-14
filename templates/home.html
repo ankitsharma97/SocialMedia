@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+
+{% for item in posts_with_mappings %}
+    {% with post=item.post follow_mapping=item.follow_mapping like_count=item.like_count is_liked=item.is_liked %}
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="card bg-dark text-white mt-2 p-2" style="width: 400px;">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <img class="rounded-circle me-2" src="{{ post.img.url }}" alt="Profile Picture" style="width: 30px; height: 30px;">
+                                <h6 class="mb-0">{{ post.username }}</h6>
+                            </div>
+                            {% if request.user.is_authenticated %}
+                                {% if follow_mapping %}
+                                    <a class="text-white" href="{% url 'unfollow_user' post.id %}">Unfollow</a>
+                                {% else %}
+                                    <a class="text-white" href="{% url 'follow_user' post.id %}">Follow</a>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="card-body" style="max-height: 400px; overflow: hidden;">
+                        {% if post.video %}
+                            <video id="video{{ forloop.counter }}" src="{{ post.video.url }}" style="width: 100%; height: 100%; display: none;" controls></video>
+                            <label for="video{{ forloop.counter }}" class="full-view">View Full</label>
+                        {% endif %}
+                        {% if post.img %}
+                            <img id="image{{ forloop.counter }}" class="card-img-top" src="{{ post.img.url }}" alt="Post Image" style="width: 100%; height: 100%;">
+                        {% endif %}
+                    </div>
+                        <div class="card-footer">
+                            <p class="card-text">{{ post.desc }}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="like-count">
+                                    <p><strong>Likes:</strong> {{ like_count }}</p>
+                                </div>
+                                {% if request.user.is_authenticated %}
+                                <form action="{% url 'like_post' post.id %}" method="post">
+                                    {% csrf_token %}
+                                    <div class="d-grid gap-2">
+                                        {% if is_liked %}
+                                            <button class="btn btn-primary" type="submit">Liked</button>
+                                        {% else %}
+                                            <button class="btn btn-outline-primary" type="submit">Like</button>
+                                        {% endif %}
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endwith %}
+{% endfor %}
+
+{% endblock content %}
