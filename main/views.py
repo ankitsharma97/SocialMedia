@@ -16,11 +16,9 @@ from django.contrib.auth.models import User
 class ProfileView(View):
     def get(self, request, username):
         user = get_object_or_404(User, username=username)
-        print(user)
         follow_user = Follow.objects.filter(follower=user)
         followed_user = Follow.objects.filter(followed_user=user)
         user_profile = UserProfile.objects.get(username=user.username)
-        print(user_profile)
         posts = Post.objects.filter(username=user.username)
         is_following = False
                 
@@ -157,7 +155,7 @@ class AddPostView(LoginRequiredMixin, View):
             username = request.user.username
             post = Post(desc=desc, username=username, img=img, video=video)
             post.save()
-            return redirect('profile',user_id = request.user.id)
+            return redirect('profile',username = request.user.username)
         return render(request, 'addpost.html', {'form': form})
 class UpdatePostView(LoginRequiredMixin, UpdateView):
     model = Post
