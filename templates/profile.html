@@ -51,15 +51,15 @@
                         <div class="row text-center text-black">
                             <div class="col">
                                 <h3>{{ posts|length }}</h3>
-                                <p class=""><strong><a href="{% url 'allpost'  user.id%}" class=" btn btn-outline-light">Posts</a></strong></p>
+                                <p class=""><strong><a href="{% url 'allpost'  user_profile.id %}" class=" btn btn-outline-light">Posts</a></strong></p>
                             </div>
                             <div class="col">
                                 <h3>{{ follow_user|length }}</h3>
-                                <p class=""><strong><a href="{% url 'following'  user.id  %}" class="btn btn-outline-light">Following</a></strong></p>
+                                <p class=""><strong><a href="{% url 'following'  user_profile.id  %}" class="btn btn-outline-light">Following</a></strong></p>
                             </div>
                             <div class="col">
                                 <h3>{{ followed_user|length }}</h3>
-                                <p class=""><strong><a href="{% url 'followers'  user.id %}" class="btn btn-outline-light">Followers</a></strong></p>
+                                <p class=""><strong><a href="{% url 'followers'  user_profile.id %}" class="btn btn-outline-light">Followers</a></strong></p>
                             </div>
                         </div>
                         <hr>
@@ -68,7 +68,7 @@
                             <p class="font-italic mx-2">{{ user_profile.about }}</p>
                         </div>
                         <div class="mt-4">
-                            <h3 class="text-black"><a href="{% url 'allpost' user.id %}" class="text-black">Recent Posts</a></h3>
+                            <h3 class="text-black"><a href="{% url 'allpost' user_profile.id %}" class="text-black">Recent Posts</a></h3>
                             <div class="position-relative">
                                 {% for post in posts %}
                                     {% if forloop.counter0|divisibleby:2 %}

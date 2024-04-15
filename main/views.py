@@ -15,13 +15,14 @@ from django.contrib.auth.models import User
 
 class ProfileView(View):
     def get(self, request, username):
-        user = User.objects.get(username=username)
+        user = get_object_or_404(User, username=username)
         follow_user = Follow.objects.filter(follower=user)
         followed_user = Follow.objects.filter(followed_user=user)
         user_profile = UserProfile.objects.get(username=user.username)
         posts = Post.objects.filter(username=user.username)
         is_following = False
-        is_following=Follow.objects.filter(followed_user=user, follower=request.user).exists()
+        if user.is_authenticated:
+            is_following = Follow.objects.filter(followed_user=user, follower=request.user).exists()
         print(is_following)
         return render(request, 'profile.html', {
             'user_profile': user_profile,
@@ -29,6 +30,7 @@ class ProfileView(View):
             'follow_user': follow_user,
             'followed_user': followed_user,
             'is_following': is_following,
+            'user_id': user.id, 
         })
 
 
@@ -96,7 +98,9 @@ class FollowingView( ListView):
     def get_queryset(self):
         user_id = self.kwargs.get('user_id')
         profile = UserProfile.objects.get(pk=user_id)
+        print(profile.username)
         user = User.objects.get(username=profile.username)
+        print(user)
         return Follow.objects.filter(follower=user)
 
 

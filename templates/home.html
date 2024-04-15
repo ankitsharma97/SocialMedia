@@ -13,7 +13,7 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="d-flex align-items-center">
                                 <img class="rounded-circle me-2" src="{{ user_profile.profile_pic.url }}" alt="Profile Picture" style="width: 30px; height: 30px;">
-                                <h6 class="mb-0"> <a class="nav-link" href="{% url 'profile' user_profile.username  %}">{{ post.username }}</a></h6>
+                                <h6 class="mb-0"> <a class="nav-link" href="{% url 'profile' post.username  %}">{{ post.username }}</a></h6>
                             </div>
                             {% if request.user.is_authenticated and user_profile.username != request.user.username %}
                                 {% if follow_mapping %}
