@@ -7,7 +7,7 @@ class UserProfile(models.Model):
     name = models.CharField(max_length=100)
     email = models.EmailField()
     username = models.CharField(max_length=50, unique=True)
-    profile_pic = models.ImageField(upload_to='media/profile/', blank=True, null=True)
+    profile_pic = models.ImageField(upload_to='media/profile/', blank=True, null=True,default='static/defaultImg/default_pic.jpg')
     password = models.CharField(max_length=128)
     about = models.TextField(blank=True)
     def __str__(self):

@@ -7,10 +7,10 @@
                 <form class="form-horizontal bg-dark p-3" method="POST" enctype="multipart/form-data">
                     {% csrf_token %} {{ form.as_p }}
                     <button type="submit" class="btn btn-success">Add</button>
-                    <a href="{% url 'profile' request.user.id %}" class="btn btn-danger">Cancel</a>
+                    <a href="{% url 'profile' request.user.username %}" class="btn btn-danger">Cancel</a>
                 </form>
             </div>
         </div>
-    </div>
+    </div><int:user_id>/
 
 </div>{%endblock content%}

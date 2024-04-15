@@ -1,5 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import View, TemplateView, ListView
+from django.views.generic import View, TemplateView, ListView,UpdateView
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.http import HttpResponse
@@ -10,33 +10,41 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.contrib.auth.models import User
 
 
+
+
+
 class ProfileView(View):
-    def get(self, request, user_id):
-        user = User.objects.get(pk=user_id)
+    def get(self, request, username):
+        user = User.objects.get(username=username)
         follow_user = Follow.objects.filter(follower=user)
         followed_user = Follow.objects.filter(followed_user=user)
         user_profile = UserProfile.objects.get(username=user.username)
         posts = Post.objects.filter(username=user.username)
+        is_following = False
+        is_following=Follow.objects.filter(followed_user=user, follower=request.user).exists()
+        print(is_following)
         return render(request, 'profile.html', {
             'user_profile': user_profile,
             'posts': posts,
             'follow_user': follow_user,
             'followed_user': followed_user,
+            'is_following': is_following,
         })
 
 
 class HomeView(View):
     def get(self, request):
-        posts = Post.objects.all()
+        posts = Post.objects.all().order_by('-date') 
         follows = Follow.objects.filter(follower=request.user) if request.user.is_authenticated else None
 
         posts_with_mappings = []
         for post in posts:
+            user_profile = UserProfile.objects.get(username= post.username)
             follow_mapping = follows.filter(followed_user__username=post.username).exists() if follows else False
             like_count = post.likes.count()
             is_liked = post.likes.filter(id=request.user.id).exists() if request.user.is_authenticated else False
             posts_with_mappings.append(
-                {'post': post, 'follow_mapping': follow_mapping, 'like_count': like_count, 'is_liked': is_liked})
+                {'post': post, 'follow_mapping': follow_mapping, 'like_count': like_count, 'is_liked': is_liked,'user_profile':user_profile})
 
         return render(request, 'home.html', {'posts_with_mappings': posts_with_mappings})
 
@@ -46,7 +54,7 @@ class SearchView(View):
         username = request.GET.get('q')
         try:
             user = User.objects.get(username=username)
-            return redirect('profile', user_id=user.id)
+            return redirect('profile', username=user.username)
         except User.DoesNotExist:
             messages.error(request, 'User does not exist.')
             return redirect('home')
@@ -64,61 +72,60 @@ class LikePostView(LoginRequiredMixin, View):
 
 
 class FollowUserView(LoginRequiredMixin, View):
-    def get(self, request, post_id):
-        followed_post = Post.objects.get(pk=post_id)
-        followed_user = User.objects.get(username=followed_post.username)
+    def get(self, request, username):
+        followed_user = User.objects.get(username=username)
+        user = User.objects.get(username=username)
         if request.user != followed_user:
             Follow.objects.get_or_create(follower=request.user, followed_user=followed_user)
-        return redirect('home')
+        return redirect('profile', username=user.username)
 
 
 class UnfollowUserView(LoginRequiredMixin, View):
-    def get(self, request, post_id):
-        followed_post = Post.objects.get(pk=post_id)
-        followed_user = User.objects.get(username=followed_post.username)
+    def get(self, request, username):
+        followed_user = User.objects.get(username=username)
+        user = User.objects.get(username=username)
         Follow.objects.filter(follower=request.user, followed_user=followed_user).delete()
-        return redirect('home')
+        return redirect('profile', username=user.username)
 
 
-class FollowingView(LoginRequiredMixin, ListView):
+class FollowingView( ListView):
     model = Follow
     template_name = 'followers.html'
     context_object_name = 'followers'
 
     def get_queryset(self):
-        return Follow.objects.filter(follower=self.request.user)
-    def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return redirect('login')
-        return super().dispatch(request, *args, **kwargs)
+        user_id = self.kwargs.get('user_id')
+        profile = UserProfile.objects.get(pk=user_id)
+        user = User.objects.get(username=profile.username)
+        return Follow.objects.filter(follower=user)
 
 
-class FollowersView(LoginRequiredMixin, ListView):
+
+
+class FollowersView(ListView):
     model = Follow
     template_name = 'following.html'
     context_object_name = 'followers'
 
     def get_queryset(self):
-        return Follow.objects.filter(followed_user=self.request.user)
-    
-    def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return redirect('login')
-        return super().dispatch(request, *args, **kwargs)
+        user_id = self.kwargs.get('user_id')
+        profile = UserProfile.objects.get(pk=user_id)
+        user = User.objects.get(username=profile.username)
+        return Follow.objects.filter(followed_user=user)
 
 
-class AllPostView(LoginRequiredMixin, ListView):
+
+class AllPostView(ListView):
     model = Post
     template_name = 'allpost.html'
     context_object_name = 'posts'
 
     def get_queryset(self):
-        return Post.objects.filter(username=self.request.user.username)
+        user_id = self.kwargs.get('user_id')
+        profile = UserProfile.objects.get(pk=user_id)
+        user = User.objects.get(username=profile.username)
+        return Post.objects.filter(username=user.username)
     
-    def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return redirect('login')
-        return super().dispatch(request, *args, **kwargs)
 
 
 class AboutView(TemplateView):
@@ -145,6 +152,39 @@ class AddPostView(LoginRequiredMixin, View):
             post.save()
             return redirect('profile',user_id = request.user.id)
         return render(request, 'addpost.html', {'form': form})
+
+class UpdatePostView(LoginRequiredMixin, UpdateView):
+    model = Post
+    form_class = PostForm
+    template_name = 'updatepost.html'
+    success_url = '/profile/,username=username'
+
+    def get_object(self, queryset=None):
+        # Get the Post object based on the id in the URL
+        return Post.objects.get(pk=self.kwargs['id'])
+
+    def form_valid(self, form):
+        # Save the form if it's valid and redirect to success_url
+        form.save()
+        return super().form_valid(form)
+
+    def get(self, request, *args, **kwargs):
+        # Handle GET request, get the form and render the template
+        return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        # Handle POST request, validate the form and save the data
+        return super().post(request, *args, **kwargs)
+
+def delete_post(request,id):
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            pi = Post.objects.get(pk=id)
+            pi.delete()
+        return redirect('profile',username=request.user.username)
+    else:
+        return  redirect('login')
+    
 
 
 class UpdateProfileView(LoginRequiredMixin, View):
