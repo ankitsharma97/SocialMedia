@@ -156,29 +156,28 @@ class AddPostView(LoginRequiredMixin, View):
             post.save()
             return redirect('profile',user_id = request.user.id)
         return render(request, 'addpost.html', {'form': form})
-
 class UpdatePostView(LoginRequiredMixin, UpdateView):
     model = Post
     form_class = PostForm
     template_name = 'updatepost.html'
-    success_url = '/profile/,username=username'
+
+    def get_success_url(self):
+        return reverse_lazy('profile', kwargs={'username': self.request.user.username})
 
     def get_object(self, queryset=None):
-        # Get the Post object based on the id in the URL
         return Post.objects.get(pk=self.kwargs['id'])
 
     def form_valid(self, form):
-        # Save the form if it's valid and redirect to success_url
         form.save()
         return super().form_valid(form)
 
     def get(self, request, *args, **kwargs):
-        # Handle GET request, get the form and render the template
         return super().get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        # Handle POST request, validate the form and save the data
         return super().post(request, *args, **kwargs)
+
+
 
 def delete_post(request,id):
     if request.user.is_authenticated:

@@ -79,7 +79,7 @@
                                             <img src="{{ post.img.url }}" alt="Image {{ forloop.counter }}" class="w-100 rounded-3 post-image" style="width: 100%; height: 80%;">
                                             {% if request.user.username == user_profile.username %}
                                                 <div class="position-absolute top-0 end-0">
-                                                    <a href="{% url 'update_post' post.id %}" class="btn btn-sm btn-outline-light">Edit</a>
+                                                    <a href="{% url 'update_post' post.id %}" class="btn btn-sm bg-dark btn-outline-light">Edit</a>
                                                     <form action="{% url 'delete_post' post.id %}" method="post" class="d-inline">
                                                         {% csrf_token %}
                                                         <input type="submit" value="Delete" class="btn btn-danger btn-sm my-1">
