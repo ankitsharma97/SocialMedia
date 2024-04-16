@@ -129,6 +129,8 @@ class AllPostView(ListView):
         user_id = self.kwargs.get('user_id')
         profile = UserProfile.objects.get(pk=user_id)
         user = User.objects.get(username=profile.username)
+        p=Post.objects.filter(username=user.username)
+
         return Post.objects.filter(username=user.username)
     
 

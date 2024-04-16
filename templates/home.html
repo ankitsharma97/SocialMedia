@@ -26,13 +26,13 @@
                     </div>
                     <div class="card-body" style="max-height: 400px; overflow: hidden;">
                         {% if post.video %}
-                            <video id="video{{ forloop.counter }}" src="{{ post.video.url }}" style="width: 100%; height: 100%; display: none;" controls></video>
-                            <label for="video{{ forloop.counter }}" class="full-view">View Full</label>
+                            <video id="video{{ forloop.counter }}" src="{{ post.video.url }}" style="width: 100%; height: 100%;" controls></video>
                         {% endif %}
                         {% if post.img %}
                             <img id="image{{ forloop.counter }}" class="card-img-top" src="{{ post.img.url }}" alt="Post Image" style="width: 100%; height: 100%;">
                         {% endif %}
                     </div>
+                    
                         <div class="card-footer">
                             <p class="card-text">{{ post.desc }}</p>
                             <div class="d-flex justify-content-between align-items-center">
