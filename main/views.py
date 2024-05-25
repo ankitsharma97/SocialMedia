@@ -23,10 +23,8 @@ class ProfileView(View):
         is_following = False
                 
         if request.user.is_authenticated:
-            print(user)
             is_following = Follow.objects.filter(followed_user=user, follower=request.user).exists()
 
-        print(is_following)
         return render(request, 'profile.html', {
             'user_profile': user_profile,
             'posts': posts,
