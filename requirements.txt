@@ -1,7 +1,11 @@
 asgiref
+dj-database-url
 Django
+gunicorn
+packaging
 pillow
+psycopg2
+psycopg2-binary
 sqlparse
 typing_extensions
-gunicorn
 whitenoise
