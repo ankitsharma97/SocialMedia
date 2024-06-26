@@ -86,16 +86,16 @@ WSGI_APPLICATION = 'socialMedia.wsgi.application'
 # }
 
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'ankitsharma',
-#         'USER': 'ankitsharma_user',
-#         'PASSWORD': '8RKSDusnXmxfUR8goWW8gPMqsoRZCQWt',
-#         'HOST': 'dpg-cp8oeskf7o1s739m6arg-a',
-#         'PORT': '5432',
-#     }
-# }
+# # DATABASES = {
+# #     'default': {
+# #         'ENGINE': 'django.db.backends.postgresql',
+# #         'NAME': 'ankitsharma',
+# #         'USER': 'ankitsharma_user',
+# #         'PASSWORD': '8RKSDusnXmxfUR8goWW8gPMqsoRZCQWt' ,
+# #         'HOST': 'dpg-cp8oeskf7o1s739m6arg-a',
+# #         'PORT': '5432',
+# #     }
+# # }
 
 DATABASES = {
     'default': dj_database_url.parse(os.environ.get('DATABASE_URL'))
